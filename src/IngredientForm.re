@@ -26,10 +26,11 @@ let make = (~show, ~toggle) => {
   let onClick = evt => {
     dispatchIngredient(IngredientsContext.AddIngredient(ingredient));
     dispatch(ResetForm);
+    toggle(evt);
   };
 
-  <div className=modalClass id="ingredientModal">
-    <div className="modal-background" />
+  <div className=modalClass>
+    <div className="modal-background" onClick=toggle />
     <div className="modal-card">
       <header className="modal-card-head">
         <p className="modal-card-title"> "Create Ingredient"->React.string </p>
@@ -46,6 +47,7 @@ let make = (~show, ~toggle) => {
               id="ingredientName"
               onChange={evt => valueFromEvent(evt)->SetName |> dispatch}
               placeholder="e.g. Eggs"
+              value={ingredient.name}
             />
           </div>
         </div>
@@ -56,12 +58,12 @@ let make = (~show, ~toggle) => {
           <div className="control">
             <input
               className="input"
-              defaultValue="0.0"
               type_="number"
               id="ingredientCalories"
               min=0
               onChange={evt => valueFromEvent(evt)->SetCalories |> dispatch}
-              step=0.01
+              step=0.1
+              value=ingredient.calories->Js.Float.toString
             />
           </div>
         </div>

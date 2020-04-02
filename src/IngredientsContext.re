@@ -6,11 +6,6 @@ type action =
 type dispatch = action => unit;
 type contextValue = (state, dispatch);
 
-let addIngredientToList = (name, calories, state) => [
-  Ingredient.make(name, calories),
-  ...state,
-];
-
 let reducer = (state, action) =>
   switch (action) {
   | FetchIngredients => Dish.ingredients
