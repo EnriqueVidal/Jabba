@@ -5,26 +5,36 @@ type actions =
   | SetName(string)
   | SetCalories(string);
 
-let initialState = Ingredient.make("", 0.0);
+type formState = {
+  name: string,
+  calories: string,
+};
 
-let reducer = (state: Ingredient.t, action: actions): Ingredient.t =>
+let initialState = {name: "", calories: "0.0"};
+
+let reducer = (state, action) =>
   switch (action) {
   | ResetForm => initialState
   | SetName(name) => {...state, name}
-  | SetCalories(calories) => {...state, calories: float_of_string(calories)}
+  | SetCalories(calories) => {...state, calories}
   };
 
 let useIngredients = IngredientsContext.useIngredients;
 
 [@react.component]
 let make = (~show, ~toggle) => {
-  let (ingredient, dispatch) = React.useReducer(reducer, initialState);
-  let (_, dispatchIngredient) = useIngredients();
+  let (form, dispatch) = React.useReducer(reducer, initialState);
+  let (_, contextDispatch) = useIngredients();
 
   let modalClass = Cn.make(["modal", "is-active"->Cn.ifTrue(show)]);
 
   let onClick = evt => {
-    dispatchIngredient(IngredientsContext.AddIngredient(ingredient));
+    let {name, calories} = form;
+
+    IngredientsContext.(
+      AddIngredient(name, float_of_string(calories)) |> contextDispatch
+    );
+
     dispatch(ResetForm);
     toggle(evt);
   };
@@ -47,7 +57,7 @@ let make = (~show, ~toggle) => {
               id="ingredientName"
               onChange={evt => valueFromEvent(evt)->SetName |> dispatch}
               placeholder="e.g. Eggs"
-              value={ingredient.name}
+              value={form.name}
             />
           </div>
         </div>
@@ -63,7 +73,7 @@ let make = (~show, ~toggle) => {
               min=0
               onChange={evt => valueFromEvent(evt)->SetCalories |> dispatch}
               step=0.1
-              value=ingredient.calories->Js.Float.toString
+              value={form.calories}
             />
           </div>
         </div>

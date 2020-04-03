@@ -16,12 +16,14 @@ let initialIngredients = Dish.ingredients;
 [@react.component]
 let make = () => {
   let (showModal, dispatchModal) = React.useState(_ => false);
+  let (ingredients, _) = IngredientsContext.useIngredients();
 
   let toggleModal = _ => dispatchModal(_ => !showModal);
   let onSubmit = evt => ReactEvent.Form.preventDefault(evt);
 
   let meals = Meal.(toOptions(asList, toString)) |> React.array;
   let units = Amount.(toOptions(asList, toString)) |> React.array;
+  let ingredients = Ingredient.toOptions(ingredients) |> React.array;
 
   <section className="section">
     <div className="container">
@@ -60,6 +62,14 @@ let make = () => {
           </label>
           <div className="control">
             <div className="select"> <select> units </select> </div>
+          </div>
+        </div>
+        <div className="field">
+          <label htmlFor="ingredients" className="label">
+            "Ingredients"->React.string
+          </label>
+          <div className="control">
+            <div className="select"> <select> ingredients </select> </div>
           </div>
         </div>
         <div className="field">
