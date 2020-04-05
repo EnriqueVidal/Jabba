@@ -1,4 +1,5 @@
 open Uuid.V4;
+open IngredientsContext;
 
 let toOptions = (options, parser) =>
   List.map(
@@ -11,14 +12,18 @@ let toOptions = (options, parser) =>
   )
   |> Array.of_list;
 
-let initialIngredients = Dish.ingredients;
+let useModal = initialState => {
+  let (show, dispatch) = React.useState(_ => initialState);
+  let toggle = _ => dispatch(_ => !show);
+
+  (show, toggle);
+};
 
 [@react.component]
 let make = () => {
-  let (showModal, dispatchModal) = React.useState(_ => false);
-  let (ingredients, _) = IngredientsContext.useIngredients();
+  let (show, toggle) = useModal(false);
+  let (ingredients, _) = useIngredients();
 
-  let toggleModal = _ => dispatchModal(_ => !showModal);
   let onSubmit = evt => ReactEvent.Form.preventDefault(evt);
 
   let meals = Meal.(toOptions(asList, toString)) |> React.array;
@@ -74,13 +79,13 @@ let make = () => {
         </div>
         <div className="field">
           <div className="control">
-            <button className="button is-link is-light" onClick=toggleModal>
+            <button className="button is-link is-light" onClick=toggle>
               "Add Ingredient"->React.string
             </button>
           </div>
         </div>
       </form>
     </div>
-    <IngredientForm show=showModal toggle=toggleModal />
+    <IngredientForm show toggle />
   </section>;
 };

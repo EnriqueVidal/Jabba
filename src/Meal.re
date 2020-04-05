@@ -12,12 +12,4 @@ let toString = meal =>
   | Dinner => "Dinner"
   };
 
-let fromString = meal =>
-  switch (String.lowercase(meal)) {
-  | "breakfast" => Breakfast
-  | "lunch" => Lunch
-  | "snack" => Snack
-  | "dinner" => Dinner
-  };
-
 let asList = [Breakfast, Lunch, Snack, Dinner];

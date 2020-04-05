@@ -14,13 +14,4 @@ let toString = amount =>
   | Liters => "Liters"
   };
 
-let fromString = meal =>
-  switch (String.lowercase(meal)) {
-  | "piece" => Piece
-  | "slice" => Slice
-  | "oz" => Oz
-  | "gr" => Gr
-  | "liters" => Liters
-  };
-
 let asList = [Piece, Slice, Oz, Gr, Liters];

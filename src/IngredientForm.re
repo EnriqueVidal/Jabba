@@ -1,3 +1,5 @@
+open Ingredient;
+
 let valueFromEvent = evt: string => evt->ReactEvent.Form.target##value;
 
 type actions =
@@ -31,9 +33,7 @@ let make = (~show, ~toggle) => {
   let onClick = evt => {
     let {name, calories} = form;
 
-    IngredientsContext.(
-      AddIngredient(name, float_of_string(calories)) |> contextDispatch
-    );
+    AddIngredient(name, float_of_string(calories)) |> contextDispatch;
 
     dispatch(ResetForm);
     toggle(evt);

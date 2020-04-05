@@ -1,21 +1,6 @@
-type state = list(Ingredient.t);
-type action =
-  | FetchIngredients
-  | AddIngredient(string, float);
+type contextValue = (Ingredient.state, Ingredient.action => unit);
 
-type dispatch = action => unit;
-type contextValue = (state, dispatch);
-
-let reducer = (state, action) =>
-  switch (action) {
-  | FetchIngredients => Dish.ingredients
-  | AddIngredient(name, calories) => [
-      Ingredient.make(name, calories),
-      ...state,
-    ]
-  };
-
-let initValue: contextValue = ([], _ => ignore());
+let initValue: contextValue = (Guid.Map.empty, _ => ());
 
 let context = React.createContext(initValue);
 

@@ -1,12 +1,10 @@
 [%bs.raw {|require('bulma')|}];
 
-open IngredientsContext;
-
-let initialIngredients = Dish.ingredients;
+open Ingredient;
 
 [@react.component]
 let make = () => {
-  let ingredientsContext = React.useReducer(reducer, initialIngredients);
+  let ingredientsContext = React.useReducer(reducer, mock);
 
   <IngredientsProvider value=ingredientsContext>
     <div className="container is-fluid"> <Form /> </div>
