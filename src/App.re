@@ -29,12 +29,7 @@ let make = () => {
   let ingredientsContext = React.useReducer(reducer, initialState);
 
   <IngredientsProvider value=ingredientsContext>
-    <div className="container is-fluid"> <DishForm /> </div>
-    <footer className="footer">
-      <div className="content has-text-centered">
-        <strong> "Jabba"->React.string </strong>
-        " is built to help us decide what to munch on"->React.string
-      </div>
-    </footer>
+    <div className="container is-fluid"> <Navbar /> <DishForm /> </div>
+    <Footer />
   </IngredientsProvider>;
 };
