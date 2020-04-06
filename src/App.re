@@ -2,23 +2,24 @@
 
 open IngredientsContext;
 
-let addIngredient = (state, name, calories) => {
-  let ingredient = Ingredient.make(name, calories);
+let addIngredient = (state, name, calories, unit) => {
+  let ingredient = Ingredient.make(name, calories, unit);
 
   state->Belt.Map.String.set(ingredient.id, ingredient);
 };
 
 let reducer = (state, action) =>
   switch (action) {
-  | AddIngredient(name, calories) => state->addIngredient(name, calories)
+  | AddIngredient(name, calories, unit) =>
+    state->addIngredient(name, calories, unit)
   | RemoveIngredient(id) => state->Belt.Map.String.remove(id)
   | UpdateIngredient(ingredient) =>
     state->Belt.Map.String.set(ingredient.id, ingredient)
   };
 
 let initialState = {
-  let egg = Ingredient.make("Egg", 347.49);
-  let ham = Ingredient.make("Pork Ham", 87.57);
+  let egg = Ingredient.make("Egg", 347.49, Amount.Piece);
+  let ham = Ingredient.make("Pork Ham", 87.57, Amount.Slice);
 
   Belt.Map.String.(empty->set(egg.id, egg)->set(ham.id, ham));
 };
@@ -28,7 +29,7 @@ let make = () => {
   let ingredientsContext = React.useReducer(reducer, initialState);
 
   <IngredientsProvider value=ingredientsContext>
-    <div className="container is-fluid"> <Form /> </div>
+    <div className="container is-fluid"> <DishForm /> </div>
     <footer className="footer">
       <div className="content has-text-centered">
         <strong> "Jabba"->React.string </strong>

@@ -1,7 +1,7 @@
 type state = Belt.Map.String.t(Ingredient.t);
 
 type action =
-  | AddIngredient(string, float)
+  | AddIngredient(string, float, Amount.t)
   | RemoveIngredient(string)
   | UpdateIngredient(Ingredient.t);
 

@@ -1,27 +1,27 @@
+open Form;
 open IngredientsContext;
-
-let valueFromEvent = evt: string => evt->ReactEvent.Form.target##value;
 
 type actions =
   | ResetForm
+  | SetAmount(string)
   | SetName(string)
   | SetCalories(string);
 
 type formState = {
   name: string,
   calories: string,
+  unit: string,
 };
 
-let initialState = {name: "", calories: "0.0"};
+let initialState = {name: "", calories: "0.0", unit: "Gr"};
 
 let reducer = (state, action) =>
   switch (action) {
   | ResetForm => initialState
+  | SetAmount(unit) => {...state, unit}
   | SetName(name) => {...state, name}
   | SetCalories(calories) => {...state, calories}
   };
-
-let useIngredients = IngredientsContext.useIngredients;
 
 [@react.component]
 let make = (~show, ~toggle) => {
@@ -29,11 +29,13 @@ let make = (~show, ~toggle) => {
   let (_, contextDispatch) = useIngredients();
 
   let modalClass = Cn.make(["modal", "is-active"->Cn.ifTrue(show)]);
+  let amounts = toOptions(Amount.asList, Amount.toString) |> React.array;
 
   let onClick = evt => {
-    let {name, calories} = form;
+    let {name, calories, unit} = form;
 
-    AddIngredient(name, float_of_string(calories)) |> contextDispatch;
+    AddIngredient(name, float_of_string(calories), Amount.fromString(unit))
+    |> contextDispatch;
 
     dispatch(ResetForm);
     toggle(evt);
@@ -59,6 +61,20 @@ let make = (~show, ~toggle) => {
               placeholder="e.g. Eggs"
               value={form.name}
             />
+          </div>
+        </div>
+        <div className="field">
+          <label htmlFor="units" className="label">
+            "Units"->React.string
+          </label>
+          <div className="control">
+            <div className="select">
+              <select
+                onChange={evt => valueFromEvent(evt)->SetAmount |> dispatch}
+                value={form.unit}>
+                amounts
+              </select>
+            </div>
           </div>
         </div>
         <div className="field">
