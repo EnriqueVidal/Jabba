@@ -1,4 +1,3 @@
-ReactDOMRe.createElementVariadic;
 module Burger = {
   [@react.component]
   let make = (~children, ~className, ~expanded, ~onClick) =>
@@ -8,7 +7,7 @@ module Burger = {
         ReactDOMRe.objToDOMProps({
           "aria-label": "menu",
           "aria-expanded": expanded,
-          "class": className,
+          "className": className,
           "data-target": "navbar",
           "onClick": onClick,
           "role": "button",
@@ -35,9 +34,13 @@ let make = () => {
     </div>
     <div id="navbar" className=menuClass>
       <div className="navbar-start">
-        <a className="navbar-item"> "Home"->React.string </a>
-        <a className="navbar-item"> "Dishes"->React.string </a>
-        <a className="navbar-item"> "Ingredients"->React.string </a>
+        <Link className="navbar-item" href="/"> "Home"->React.string </Link>
+        <Link className="navbar-item" href="/dishes">
+          "Dishes"->React.string
+        </Link>
+        <Link className="navbar-item" href="/ingredients">
+          "Ingredients"->React.string
+        </Link>
       </div>
     </div>
   </nav>;
