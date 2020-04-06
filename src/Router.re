@@ -4,6 +4,7 @@ let make = () => {
 
   switch (url.path) {
   | ["dishes", "create"] => <DishForm />
+  | ["ingredients"] => <Ingredients />
   | [] => <DishForm />
   | _ => <PageNotFound />
   };
