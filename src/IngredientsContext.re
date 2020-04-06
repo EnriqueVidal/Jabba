@@ -1,6 +1,13 @@
-type contextValue = (Ingredient.state, Ingredient.action => unit);
+type state = Belt.Map.String.t(Ingredient.t);
 
-let initValue: contextValue = (Guid.Map.empty, _ => ());
+type action =
+  | AddIngredient(string, float)
+  | RemoveIngredient(string)
+  | UpdateIngredient(Ingredient.t);
+
+type contextValue = (state, action => unit);
+
+let initValue: contextValue = (Belt.Map.String.empty, _ => ());
 
 let context = React.createContext(initValue);
 

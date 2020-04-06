@@ -2,15 +2,12 @@ open Uuid.V4;
 open IngredientsContext;
 
 let toOptions = (options, parser) =>
-  List.map(
-    option => {
+  Belt.List.toArray(options)
+  ->Belt.Array.map(option => {
       let key = uuidv4();
       let value = parser(option);
       <option key value> value->React.string </option>;
-    },
-    options,
-  )
-  |> Array.of_list;
+    });
 
 let useModal = initialState => {
   let (show, dispatch) = React.useState(_ => initialState);
@@ -24,11 +21,16 @@ let make = () => {
   let (show, toggle) = useModal(false);
   let (ingredients, _) = useIngredients();
 
-  let onSubmit = evt => ReactEvent.Form.preventDefault(evt);
+  let onSubmit = ReactEvent.Form.preventDefault;
 
   let meals = Meal.(toOptions(asList, toString)) |> React.array;
   let units = Amount.(toOptions(asList, toString)) |> React.array;
-  let ingredients = Ingredient.toOptions(ingredients) |> React.array;
+  let ingredients =
+    Belt.Map.String.toArray(ingredients)
+    ->Belt.Array.map(((id, {name})) =>
+        <option key=id value=id> name->React.string </option>
+      )
+    |> React.array;
 
   <section className="section">
     <div className="container">

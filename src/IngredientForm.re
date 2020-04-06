@@ -1,4 +1,4 @@
-open Ingredient;
+open IngredientsContext;
 
 let valueFromEvent = evt: string => evt->ReactEvent.Form.target##value;
 
