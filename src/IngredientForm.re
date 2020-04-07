@@ -1,6 +1,6 @@
 open IngredientsContext;
 
-module IngredientForm = [%form
+module Formality = [%form
   type input = {
     name: string,
     calories: string,
@@ -44,10 +44,10 @@ let make = (~dispatch, ~show, ~toggle) => {
   let amounts = Form.toOptions(Amount.asList, Amount.toString) |> React.array;
 
   let form =
-    IngredientForm.useForm(
+    Formality.useForm(
       ~initialInput={name: "", calories: "0.0", unit_: ""},
       ~onSubmit=(output, form) => {
-        let {name, calories, unit_}: IngredientForm.output = output;
+        let {name, calories, unit_}: Formality.output = output;
 
         AddIngredient(name, calories, unit_) |> dispatch;
 
@@ -62,6 +62,12 @@ let make = (~dispatch, ~show, ~toggle) => {
         ->ignore;
       },
     );
+
+  let cancel = evt => {
+    evt->ReactEvent.Mouse.preventDefault;
+    toggle();
+    form.reset();
+  };
 
   let modalClass = Cn.make(["modal", "is-active"->Cn.ifTrue(show)]);
 
@@ -84,99 +90,77 @@ let make = (~dispatch, ~show, ~toggle) => {
     ]);
 
   <div className=modalClass>
-    <div className="modal-background" onClick={_ => toggle()} />
+    <div className="modal-background" onClick=cancel />
     <Form onSubmit={_ => form.submit()}>
       <div className="modal-card">
         <header className="modal-card-head">
-          <p className="modal-card-title">
+          <p className="modal-card-title is-unselectable">
             "Create Ingredient"->React.string
           </p>
         </header>
         <section className="modal-card-body">
           <HorizontalField htmlFor="name" label="Name:">
-            <>
-              <input
-                className={fieldClass(form.nameResult, ())}
-                disabled={form.submitting}
-                type_="text"
-                id="name"
-                placeholder="e.g. Eggs"
-                onBlur={form.blurName}
-                onChange={
-                  form.updateName((~target, input) =>
-                    {...input, name: target##value}
-                  )
-                }
-                value={form.input.name}
-              />
-              {
-                switch (form.nameResult) {
-                | Some(Error(message)) => <FieldError message />
-                | _ => React.null
-                }
+            <input
+              className={fieldClass(form.nameResult, ())}
+              disabled={form.submitting}
+              type_="text"
+              id="name"
+              placeholder="e.g. Eggs"
+              onBlur={form.blurName}
+              onChange={
+                form.updateName((~target, input) =>
+                  {...input, name: target##value}
+                )
               }
-            </>
+              value={form.input.name}
+            />
+            <FieldError.Maybe result={form.nameResult} />
           </HorizontalField>
           <HorizontalField htmlFor="unit" label="Unit:">
-            <>
-              <div
-                className={
-                  fieldClass(form.unit_Result, ~defaultC="select", ())
-                }>
-                <select
-                  disabled={form.submitting}
-                  onBlur={form.blurUnit_}
-                  onChange={
-                    form.updateUnit_((~target, input) =>
-                      {...input, unit_: target##value}
-                    )
-                  }
-                  value={form.input.unit_}>
-                  <option value="">
-                    "Please select an option"->React.string
-                  </option>
-                  amounts
-                </select>
-              </div>
-              {
-                switch (form.unit_Result) {
-                | Some(Error(message)) => <FieldError message />
-                | _ => React.null
-                }
-              }
-            </>
-          </HorizontalField>
-          <HorizontalField htmlFor="calories" label="Calories:">
-            <>
-              <input
-                className={fieldClass(form.caloriesResult, ())}
+            <div
+              className={fieldClass(form.unit_Result, ~defaultC="select", ())}>
+              <select
                 disabled={form.submitting}
-                id="calories"
-                min=0
-                step=0.1
-                onBlur={form.blurCalories}
+                id="unit"
+                onBlur={form.blurUnit_}
                 onChange={
-                  form.updateCalories((~target, input) =>
-                    {...input, calories: target##value}
+                  form.updateUnit_((~target, input) =>
+                    {...input, unit_: target##value}
                   )
                 }
-                type_="number"
-                value={form.input.calories}
-              />
-              {
-                switch (form.caloriesResult) {
-                | Some(Error(message)) => <FieldError message />
-                | _ => React.null
-                }
+                value={form.input.unit_}>
+                <option value="">
+                  "Please select an option"->React.string
+                </option>
+                amounts
+              </select>
+            </div>
+            <FieldError.Maybe result={form.unit_Result} />
+          </HorizontalField>
+          <HorizontalField htmlFor="calories" label="Calories:">
+            <input
+              className={fieldClass(form.caloriesResult, ())}
+              disabled={form.submitting}
+              id="calories"
+              min=0
+              step=0.1
+              onBlur={form.blurCalories}
+              onChange={
+                form.updateCalories((~target, input) =>
+                  {...input, calories: target##value}
+                )
               }
-            </>
+              type_="number"
+              value={form.input.calories}
+            />
+            <FieldError.Maybe result={form.caloriesResult} />
           </HorizontalField>
         </section>
         <footer className="modal-card-foot">
           <button className=buttonClass disabled={form.submitting}>
             "Save"->React.string
           </button>
-          <button className="button" onClick={_ => toggle()}>
+          <button className="button" onClick=cancel>
             "Cancel"->React.string
           </button>
         </footer>

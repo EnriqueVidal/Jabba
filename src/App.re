@@ -29,7 +29,8 @@ let make = () => {
   let ingredientsContext = React.useReducer(reducer, initialState);
 
   <IngredientsProvider value=ingredientsContext>
-    <div className="container is-fluid"> <Navbar /> <Router /> </div>
+    <Navbar />
+    <div className="container is-fluid"> <Router /> </div>
     <Footer />
   </IngredientsProvider>;
 };
