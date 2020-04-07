@@ -1,6 +1,9 @@
 [@react.component]
 let make = () => {
-  let (ingredients, _) = IngredientsContext.useIngredients();
+  let (show, dispatch) = React.useState(_ => false);
+  let (ingredients, contextDispatch) = IngredientsContext.useIngredients();
+
+  let toggle = _ => dispatch(_ => !show);
 
   let rows =
     Belt.Map.String.valuesToArray(ingredients)
@@ -20,6 +23,11 @@ let make = () => {
         "These are all the existing Ingredients"->React.string
       </h2>
       <div className="table-container">
+        <div className="buttons is-right">
+          <button className="button is-primary" onClick=toggle>
+            "Create Ingredient"->React.string
+          </button>
+        </div>
         <table
           className="table is-bordered is-fullwidth is-hoverable is-striped">
           <thead>
@@ -33,5 +41,6 @@ let make = () => {
         </table>
       </div>
     </div>
+    <IngredientForm dispatch=contextDispatch show toggle />
   </section>;
 };

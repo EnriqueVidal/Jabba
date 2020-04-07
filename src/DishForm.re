@@ -1,26 +1,7 @@
-open IngredientsContext;
-
-let useModal = initialState => {
-  let (show, dispatch) = React.useState(_ => initialState);
-  let toggle = _ => dispatch(_ => !show);
-
-  (show, toggle);
-};
-
 [@react.component]
 let make = () => {
-  let (show, toggle) = useModal(false);
-  let (ingredients, _) = useIngredients();
-
   let onSubmit = ReactEvent.Form.preventDefault;
-
   let meals = Meal.(Form.toOptions(asList, toString)) |> React.array;
-  let ingredients =
-    Belt.Map.String.toArray(ingredients)
-    ->Belt.Array.map(((id, {name})) =>
-        <option key=id value=id> name->React.string </option>
-      )
-    |> React.array;
 
   <section className="section">
     <div className="container">
@@ -53,23 +34,7 @@ let make = () => {
             <div className="select"> <select> meals </select> </div>
           </div>
         </div>
-        <div className="field">
-          <label htmlFor="ingredients" className="label">
-            "Ingredients"->React.string
-          </label>
-          <div className="control">
-            <div className="select"> <select> ingredients </select> </div>
-          </div>
-        </div>
-        <div className="field">
-          <div className="control">
-            <button className="button is-link is-light" onClick=toggle>
-              "Add Ingredient"->React.string
-            </button>
-          </div>
-        </div>
       </form>
     </div>
-    <IngredientForm show toggle />
   </section>;
 };

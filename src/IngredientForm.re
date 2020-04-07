@@ -24,10 +24,8 @@ let reducer = (state, action) =>
   };
 
 [@react.component]
-let make = (~show, ~toggle) => {
-  let (form, dispatch) = React.useReducer(reducer, initialState);
-  let (_, contextDispatch) = useIngredients();
-
+let make = (~dispatch, ~show, ~toggle) => {
+  let (form, formDispatch) = React.useReducer(reducer, initialState);
   let modalClass = Cn.make(["modal", "is-active"->Cn.ifTrue(show)]);
   let amounts = toOptions(Amount.asList, Amount.toString) |> React.array;
 
@@ -35,9 +33,9 @@ let make = (~show, ~toggle) => {
     let {name, calories, unit} = form;
 
     AddIngredient(name, float_of_string(calories), Amount.fromString(unit))
-    |> contextDispatch;
+    |> dispatch;
 
-    dispatch(ResetForm);
+    formDispatch(ResetForm);
     toggle(evt);
   };
 
@@ -57,7 +55,7 @@ let make = (~show, ~toggle) => {
               className="input"
               type_="text"
               id="ingredientName"
-              onChange={evt => valueFromEvent(evt)->SetName |> dispatch}
+              onChange={evt => valueFromEvent(evt)->SetName |> formDispatch}
               placeholder="e.g. Eggs"
               value={form.name}
             />
@@ -70,7 +68,9 @@ let make = (~show, ~toggle) => {
           <div className="control">
             <div className="select">
               <select
-                onChange={evt => valueFromEvent(evt)->SetAmount |> dispatch}
+                onChange={
+                  evt => valueFromEvent(evt)->SetAmount |> formDispatch
+                }
                 value={form.unit}>
                 amounts
               </select>
@@ -87,7 +87,9 @@ let make = (~show, ~toggle) => {
               type_="number"
               id="ingredientCalories"
               min=0
-              onChange={evt => valueFromEvent(evt)->SetCalories |> dispatch}
+              onChange={
+                evt => valueFromEvent(evt)->SetCalories |> formDispatch
+              }
               step=0.1
               value={form.calories}
             />
