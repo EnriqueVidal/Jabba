@@ -17,7 +17,11 @@
   "bs-dependencies": [
     "bs-guid",
     "reason-react",
-    "re-classnames"
+    "re-classnames",
+    "re-formality"
+  ],
+  "ppx-flags": [
+    "re-formality/ppx"
   ],
   "refmt": 3
 }

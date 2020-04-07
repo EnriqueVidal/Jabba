@@ -15,12 +15,13 @@ let toString = amount =>
   };
 
 let fromString = amount =>
-  switch (String.lowercase(amount)) {
-  | "piece" => Piece
-  | "slice" => Slice
-  | "oz" => Oz
-  | "gr" => Gr
-  | "liters" => Liters
+  switch (String.lowercase_ascii(amount)) {
+  | "piece" => Some(Piece)
+  | "slice" => Some(Slice)
+  | "oz" => Some(Oz)
+  | "gr" => Some(Gr)
+  | "liters" => Some(Liters)
+  | _ => None
   };
 
 let asList = [Piece, Slice, Oz, Gr, Liters];

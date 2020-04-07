@@ -2,16 +2,16 @@
 
 open IngredientsContext;
 
-let addIngredient = (state, name, calories, unit) => {
-  let ingredient = Ingredient.make(name, calories, unit);
+let addIngredient = (state, name, calories, unit_) => {
+  let ingredient = Ingredient.make(name, calories, unit_);
 
   state->Belt.Map.String.set(ingredient.id, ingredient);
 };
 
 let reducer = (state, action) =>
   switch (action) {
-  | AddIngredient(name, calories, unit) =>
-    state->addIngredient(name, calories, unit)
+  | AddIngredient(name, calories, unit_) =>
+    state->addIngredient(name, calories, unit_)
   | RemoveIngredient(id) => state->Belt.Map.String.remove(id)
   | UpdateIngredient(ingredient) =>
     state->Belt.Map.String.set(ingredient.id, ingredient)

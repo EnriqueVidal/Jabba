@@ -7,10 +7,10 @@ let make = () => {
 
   let rows =
     Belt.Map.String.valuesToArray(ingredients)
-    ->Belt.Array.map(({id, calories, name, unit}) =>
+    ->Belt.Array.map(({id, calories, name, unit_}) =>
         <tr key=id>
           <td> name->React.string </td>
-          <td> unit->Amount.toString->React.string </td>
+          <td> unit_->Amount.toString->React.string </td>
           <td> calories->Js.Float.toString->React.string </td>
         </tr>
       )

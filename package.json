@@ -19,14 +19,15 @@
     "bs-guid": "^1.0.1",
     "bulma": "^0.8.1",
     "re-classnames": "^4.1.0",
+    "re-formality": "^4.0.0-beta.3",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "reason-react": ">=0.7.0"
   },
   "devDependencies": {
-    "bs-platform": "^5.0.6",
+    "bs-platform": "^7.2.2",
     "css-loader": "^3.4.2",
-    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-plugin": "^4.0.4",
     "sass": "^1.26.3",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.1.3",

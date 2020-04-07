@@ -7,3 +7,15 @@ let toOptions = (options, parser) =>
     });
 
 let valueFromEvent = evt: string => evt->ReactEvent.Form.target##value;
+
+[@react.component]
+let make = (~children, ~className="", ~onSubmit) => {
+  let onSubmit' = evt => {
+    if (!evt->ReactEvent.Form.defaultPrevented) {
+      evt->ReactEvent.Form.preventDefault;
+    };
+    onSubmit();
+  };
+
+  <form className onSubmit=onSubmit'> children </form>;
+};
