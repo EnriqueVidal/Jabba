@@ -77,17 +77,13 @@ let make = (~dispatch, ~show, ~toggle) => {
       Cn.mapSome(
         input,
         fun
-        | Ok(_) => "is-sucecss"
+        | Ok(_) => "is-success"
         | Error(_) => "is-danger",
       ),
     ]);
 
   let buttonClass =
-    Cn.make([
-      "button",
-      "is-primary",
-      "is-loading"->Cn.ifTrue(form.submitting),
-    ]);
+    Cn.make(["button", "is-link", "is-loading"->Cn.ifTrue(form.submitting)]);
 
   <div className=modalClass>
     <div className="modal-background" onClick=cancel />

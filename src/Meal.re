@@ -12,4 +12,13 @@ let toString = meal =>
   | Dinner => "Dinner"
   };
 
+let fromString = amount =>
+  switch (String.lowercase_ascii(amount)) {
+  | "breakfast" => Some(Breakfast)
+  | "lunch" => Some(Lunch)
+  | "snack" => Some(Snack)
+  | "dinner" => Some(Dinner)
+  | _ => None
+  };
+
 let asList = [Breakfast, Lunch, Snack, Dinner];

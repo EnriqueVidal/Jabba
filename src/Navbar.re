@@ -39,7 +39,7 @@ let make = () => {
     <div id="navbar" className=menuClass>
       <div className="navbar-start">
         <Link className="navbar-item" href="/" onNavigate>
-          "Home"->React.string
+          "Menu"->React.string
         </Link>
         <Link className="navbar-item" href="/dishes" onNavigate>
           "Dishes"->React.string

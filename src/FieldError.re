@@ -1,9 +1,7 @@
 module Basic = {
   [@react.component]
   let make = (~message) =>
-    <p className="is-size-7 has-text-danger control">
-      message->React.string
-    </p>;
+    <p className="help has-text-danger"> message->React.string </p>;
 };
 
 module Maybe = {
