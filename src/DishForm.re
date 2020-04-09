@@ -5,10 +5,22 @@ let useModal = (~initialState=false, ()) => {
   (state, toggle);
 };
 
+let buildRecipe = (ingredients, recipeIngredients) =>
+  Belt.(
+    recipeIngredients
+    ->Array.map(({amount, ingredient}: DishFormality.recipeIngredient') =>
+        ingredients->Map.String.getExn(ingredient)
+        |> RecipeIngredient.make(amount)
+      )
+    ->List.fromArray
+  );
+
 [@react.component]
 let make = () => {
   let (show, toggle) = useModal();
-  let (ingredients, dispatch) = IngredientsContext.useIngredients();
+  let (ingredients, iDispatch) = IngredientsContext.useIngredients();
+  let (_, dDispatch) = DishesContext.useDishes();
+
   let meals = Meal.(Form.toOptions(asList, toString)) |> React.array;
 
   let form =
@@ -18,15 +30,25 @@ let make = () => {
         recipeIngredients: [|{amount: "", ingredient: ""}|],
         type_: "",
       },
-      ~onSubmit=(_output, form) =>
-      Js.Global.setTimeout(
-        () => {
-          form.notifyOnSuccess(None);
-          form.reset();
-        },
-        500,
-      )
-      ->ignore
+      ~onSubmit=(output, form) => {
+        let {name, type_, recipeIngredients}: DishFormality.output = output;
+
+        DishesContext.AddDish(
+          name,
+          buildRecipe(ingredients, recipeIngredients),
+          type_,
+        )
+        ->dDispatch;
+
+        Js.Global.setTimeout(
+          () => {
+            form.notifyOnSuccess(None);
+            ReasonReactRouter.push("/dishes");
+          },
+          500,
+        )
+        ->ignore;
+      },
     );
 
   let fieldClass = (input, fClass) =>
@@ -131,6 +153,6 @@ let make = () => {
         </div>
       </Form>
     </div>
-    <IngredientForm dispatch show toggle />
+    <IngredientForm dispatch=iDispatch show toggle />
   </section>;
 };
