@@ -1,18 +1,49 @@
+module RemoveButton = {
+  [@react.component]
+  let make = (~form: DishFormality.interface('a), ~index) =>
+    if (index < 1) {
+      React.null;
+    } else {
+      <div className="control">
+        <button
+          className="button is-danger is-small"
+          disabled={form.submitting}
+          onClick={_ => form.removeRecipeIngredient(~at=index)}>
+          "Remove"->React.string
+        </button>
+      </div>;
+    };
+};
+
+module NestedLabel = {
+  [@react.component]
+  let make = (~children, ~index) =>
+    if (index < 1) {
+      <div className="field">
+        <label className="label"> children </label>
+      </div>;
+    } else {
+      React.null;
+    };
+};
+
 [@react.component]
 let make = (~form: DishFormality.interface('a), ~ingredients) => {
   let options =
     Belt.Map.String.valuesToArray(ingredients)
-    ->Belt.Array.map(({Ingredient.id, Ingredient.name}) =>
+    ->Belt.Array.map(({id, name}: Ingredient.t) =>
         <option key=id value=id> name->React.string </option>
       )
     |> React.array;
 
   let displayAmount = ingredient =>
-    switch (ingredient) {
-    | "" => "Amount"->React.string
-    | id =>
-      let {Ingredient.unit_} = Belt.Map.String.getExn(ingredients, id);
-      unit_->Amount.toString->React.string;
+    switch ("Amount", ingredient) {
+    | (default, "") => default
+    | (default, id) =>
+      Belt.Map.String.get(ingredients, id)
+      ->Belt.Option.mapWithDefault(default, ({Ingredient.unit_}) =>
+          unit_->Amount.toString
+        )
     };
 
   let update = (target, input: DishFormality.input, index, key) => {
@@ -20,97 +51,93 @@ let make = (~form: DishFormality.interface('a), ~ingredients) => {
     recipeIngredients:
       input.recipeIngredients
       ->Belt.Array.mapWithIndex((idx, ri) =>
-          if (index != idx) {
-            ri;
-          } else {
-            switch (key) {
-            | "amount" => {...ri, amount: target##value}
-            | "ingredient" => {...ri, ingredient: target##value}
-            | _ => ri
-            };
+          switch (idx == index, key) {
+          | (true, "amount") => {...ri, amount: target##value}
+          | (true, "ingredient") => {...ri, ingredient: target##value}
+          | _ => ri
           }
         ),
   };
 
-  let fields =
-    form.input.recipeIngredients
-    ->Belt.Array.mapWithIndex((index, rIngredient) =>
-        <div
-          key={"recipeIngredient" ++ index->string_of_int}
-          className="field is-grouped">
-          <div className="control">
-            <div className="field has-addons">
-              <span className="control">
-                <input
-                  className="input is-small"
-                  disabled={form.submitting}
-                  onBlur={form.blurRecipeIngredientAmount(~at=index)}
-                  onChange={
-                    form.updateRecipeIngredientAmount(
-                      ~at=index, (~target, input) =>
-                      update(target, input, index, "amount")
-                    )
-                  }
-                  value={rIngredient.amount}
-                  type_="number"
-                />
-              </span>
-              <span className="control">
-                <a className="button is-static is-small">
-                  {displayAmount(rIngredient.ingredient)}
-                </a>
-              </span>
-            </div>
+  let fieldClass = (input, fClass) =>
+    Cn.make([
+      fClass,
+      "is-small",
+      Cn.mapSome(
+        input,
+        fun
+        | Ok(_) => "is-success"
+        | Error(_) => "is-danger",
+      ),
+    ]);
+
+  form.input.recipeIngredients
+  ->Belt.Array.mapWithIndex((index, rIngredient) =>
+      <div
+        key={"recipeIngredient" ++ index->string_of_int}
+        className="field is-grouped">
+        <div className="control">
+          <NestedLabel index> "Ingredient"->React.string </NestedLabel>
+          <div
+            className={
+              fieldClass(
+                form.recipeIngredientIngredientResult(~at=index),
+                "select",
+              )
+            }>
+            <select
+              onBlur={form.blurRecipeIngredientIngredient(~at=index)}
+              onChange={
+                form.updateRecipeIngredientIngredient(
+                  ~at=index, (~target, input) =>
+                  update(target, input, index, "ingredient")
+                )
+              }
+              value={rIngredient.ingredient}>
+              <option value=""> "Pick an Ingredient"->React.string </option>
+              options
+            </select>
           </div>
-          <div className="control">
-            <div className="select is-small">
-              <select
-                onBlur={form.blurRecipeIngredientIngredient(~at=index)}
-                onChange={
-                  form.updateRecipeIngredientIngredient(
-                    ~at=index, (~target, input) =>
-                    update(target, input, index, "ingredient")
+        </div>
+        <div className="control">
+          <NestedLabel index> "Amount"->React.string </NestedLabel>
+          <div className="field has-addons">
+            <span className="control">
+              <input
+                className={
+                  fieldClass(
+                    form.recipeIngredientAmountResult(~at=index),
+                    "input",
                   )
                 }
-                value={rIngredient.ingredient}>
-                <option value="">
-                  "Pick an Ingredient from the list"->React.string
-                </option>
-                options
-              </select>
-            </div>
+                disabled={form.submitting}
+                onBlur={form.blurRecipeIngredientAmount(~at=index)}
+                onChange={
+                  form.updateRecipeIngredientAmount(
+                    ~at=index, (~target, input) =>
+                    update(target, input, index, "amount")
+                  )
+                }
+                placeholder="Amount needed for dish"
+                value={rIngredient.amount}
+                type_="text"
+              />
+            </span>
+            <span className="control">
+              <span
+                className={
+                  fieldClass(
+                    form.recipeIngredientAmountResult(~at=index),
+                    "button",
+                  )
+                }>
+                rIngredient.ingredient->displayAmount->React.string
+              </span>
+            </span>
           </div>
-          {
-            if (index > 0) {
-              <div className="control">
-                <button
-                  className="button is-danger is-small"
-                  disabled={form.submitting}
-                  onClick={_ => form.removeRecipeIngredient(~at=index)}>
-                  "Remove Ingredient"->React.string
-                </button>
-              </div>;
-            } else {
-              React.null;
-            }
-          }
         </div>
-      )
-    ->React.array;
-
-  <>
-    fields
-    <div className="field is-grouped">
-      <button
-        className="button is-primary is-small"
-        onClick={
-          evt => {
-            evt->ReactEvent.Mouse.preventDefault;
-            form.addRecipeIngredient({amount: "0", ingredient: ""});
-          }
-        }>
-        "Add Ingredient"->React.string
-      </button>
-    </div>
-  </>;
+        <RemoveButton form index />
+      </div>
+    )
+  ->React.array;
 };

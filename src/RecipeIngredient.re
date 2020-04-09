@@ -1,11 +1,11 @@
 type t = {
-  amount: int,
+  amount: float,
   calories: float,
   ingredient: Ingredient.t,
 };
 
-let make = (amount: int, ingredient: Ingredient.t): t => {
+let make = (amount, ingredient: Ingredient.t): t => {
   amount,
-  calories: float_of_int(amount) *. ingredient.calories,
+  calories: amount *. ingredient.calories,
   ingredient,
 };

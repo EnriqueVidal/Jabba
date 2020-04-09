@@ -1,13 +1,21 @@
+let useModal = (~initialState=false, ()) => {
+  let (state, dispatch) = React.useState(_ => initialState);
+  let toggle = () => dispatch(_ => !state);
+
+  (state, toggle);
+};
+
 [@react.component]
 let make = () => {
-  let (ingredients, _) = IngredientsContext.useIngredients();
+  let (show, toggle) = useModal();
+  let (ingredients, dispatch) = IngredientsContext.useIngredients();
   let meals = Meal.(Form.toOptions(asList, toString)) |> React.array;
 
   let form =
     DishFormality.useForm(
       ~initialInput={
         name: "",
-        recipeIngredients: [|{amount: "0", ingredient: ""}|],
+        recipeIngredients: [|{amount: "", ingredient: ""}|],
         type_: "",
       },
       ~onSubmit=(_output, form) =>
@@ -21,15 +29,16 @@ let make = () => {
       ->ignore
     );
 
-  let fieldClass = (input, classes) =>
+  let fieldClass = (input, fClass) =>
     Cn.make([
+      fClass,
+      "is-small",
       Cn.mapSome(
         input,
         fun
         | Ok(_) => "is-success"
         | Error(_) => "is-danger",
       ),
-      ...classes,
     ]);
 
   let buttonClass =
@@ -41,17 +50,18 @@ let make = () => {
     ]);
 
   <section className="section">
+    <DishBreadcrumbs />
     <div className="container">
       <h1 className="title"> "Dishes"->React.string </h1>
       <h2 className="subtitle">
         "Create dishes that will appear in your menu"->React.string
       </h2>
       <Form onSubmit={_ => form.submit()}>
-        <VerticalField htmlFor="name" label="Name">
+        <VerticalField htmlFor="dishName" label="Name">
           <input
-            className={fieldClass(form.nameResult, ["input", "is-small"])}
+            className={fieldClass(form.nameResult, "input")}
             disabled={form.submitting}
-            id="name"
+            id="dishName"
             onBlur={form.blurName}
             onChange={
               form.updateName((~target, input) =>
@@ -64,12 +74,11 @@ let make = () => {
           />
           <FieldError.Maybe result={form.nameResult} />
         </VerticalField>
-        <VerticalField htmlFor="meal" label="Meal">
-          <div
-            className={fieldClass(form.type_Result, ["select", "is-small"])}>
+        <VerticalField htmlFor="dishMeal" label="Meal">
+          <div className={fieldClass(form.type_Result, "select")}>
             <select
               disabled={form.submitting}
-              id="meal"
+              id="dishMeal"
               onBlur={form.blurType_}
               onChange={
                 form.updateType_((~target, input) =>
@@ -77,9 +86,7 @@ let make = () => {
                 )
               }
               value={form.input.type_}>
-              <option value="">
-                "Pick an Item from the list"->React.string
-              </option>
+              <option value=""> "Pick a Meal"->React.string </option>
               meals
             </select>
           </div>
@@ -88,15 +95,42 @@ let make = () => {
         <DishNestedIngredients form ingredients />
         <div className="field is-grouped">
           <div className="control">
+            <button
+              className="button is-success is-small"
+              onClick={
+                evt => {
+                  evt->ReactEvent.Mouse.preventDefault;
+                  form.addRecipeIngredient({amount: "", ingredient: ""});
+                }
+              }>
+              "Add Ingredient to Dish"->React.string
+            </button>
+          </div>
+          <div className="control">
+            <button
+              className=buttonClass
+              onClick={
+                evt => {
+                  evt->ReactEvent.Mouse.preventDefault;
+                  toggle();
+                }
+              }>
+              "Add Ingredient to List"->React.string
+            </button>
+          </div>
+        </div>
+        <div className="field is-grouped">
+          <div className="control">
             <button className=buttonClass> "Save"->React.string </button>
           </div>
           <div className="control">
-            <button className="button is-link is-light is-small">
+            <Link className="button is-link is-light is-small" href="/dishes">
               "Cancel"->React.string
-            </button>
+            </Link>
           </div>
         </div>
       </Form>
     </div>
+    <IngredientForm dispatch show toggle />
   </section>;
 };

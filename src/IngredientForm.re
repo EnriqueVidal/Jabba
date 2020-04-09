@@ -45,7 +45,7 @@ let make = (~dispatch, ~show, ~toggle) => {
 
   let form =
     Formality.useForm(
-      ~initialInput={name: "", calories: "0.0", unit_: ""},
+      ~initialInput={name: "", calories: "", unit_: ""},
       ~onSubmit=(output, form) => {
         let {name, calories, unit_}: Formality.output = output;
 
@@ -54,8 +54,8 @@ let make = (~dispatch, ~show, ~toggle) => {
         Js.Global.setTimeout(
           () => {
             form.notifyOnSuccess(None);
-            toggle();
             form.reset();
+            toggle();
           },
           500,
         )
@@ -74,6 +74,7 @@ let make = (~dispatch, ~show, ~toggle) => {
   let fieldClass = (input, ~defaultC="input", ()) =>
     Cn.make([
       defaultC,
+      "is-small",
       Cn.mapSome(
         input,
         fun
@@ -83,7 +84,12 @@ let make = (~dispatch, ~show, ~toggle) => {
     ]);
 
   let buttonClass =
-    Cn.make(["button", "is-link", "is-loading"->Cn.ifTrue(form.submitting)]);
+    Cn.make([
+      "button",
+      "is-link",
+      "is-small",
+      "is-loading"->Cn.ifTrue(form.submitting),
+    ]);
 
   <div className=modalClass>
     <div className="modal-background" onClick=cancel />
@@ -95,12 +101,13 @@ let make = (~dispatch, ~show, ~toggle) => {
           </p>
         </header>
         <section className="modal-card-body">
-          <HorizontalField htmlFor="name" label="Name:">
+          <HorizontalField
+            className="is-small" htmlFor="ingredientName" label="Name:">
             <input
               className={fieldClass(form.nameResult, ())}
               disabled={form.submitting}
               type_="text"
-              id="name"
+              id="ingredientName"
               placeholder="e.g. Eggs"
               onBlur={form.blurName}
               onChange={
@@ -112,12 +119,13 @@ let make = (~dispatch, ~show, ~toggle) => {
             />
             <FieldError.Maybe result={form.nameResult} />
           </HorizontalField>
-          <HorizontalField htmlFor="unit" label="Unit:">
+          <HorizontalField
+            className="is-small" htmlFor="ingredientUnit" label="Unit:">
             <div
               className={fieldClass(form.unit_Result, ~defaultC="select", ())}>
               <select
                 disabled={form.submitting}
-                id="unit"
+                id="ingredientUnit"
                 onBlur={form.blurUnit_}
                 onChange={
                   form.updateUnit_((~target, input) =>
@@ -133,11 +141,14 @@ let make = (~dispatch, ~show, ~toggle) => {
             </div>
             <FieldError.Maybe result={form.unit_Result} />
           </HorizontalField>
-          <HorizontalField htmlFor="calories" label="Calories:">
+          <HorizontalField
+            className="is-small"
+            htmlFor="ingredientCalories"
+            label="Calories:">
             <input
               className={fieldClass(form.caloriesResult, ())}
               disabled={form.submitting}
-              id="calories"
+              id="ingredientCalories"
               min=0
               step=0.1
               onBlur={form.blurCalories}
@@ -146,7 +157,7 @@ let make = (~dispatch, ~show, ~toggle) => {
                   {...input, calories: target##value}
                 )
               }
-              type_="number"
+              placeholder="Calories per Unit"
               value={form.input.calories}
             />
             <FieldError.Maybe result={form.caloriesResult} />
@@ -156,7 +167,7 @@ let make = (~dispatch, ~show, ~toggle) => {
           <button className=buttonClass disabled={form.submitting}>
             "Save"->React.string
           </button>
-          <button className="button" onClick=cancel>
+          <button className="button is-small" onClick=cancel>
             "Cancel"->React.string
           </button>
         </footer>
