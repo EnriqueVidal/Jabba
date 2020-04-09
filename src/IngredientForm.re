@@ -74,7 +74,6 @@ let make = (~dispatch, ~show, ~toggle) => {
   let fieldClass = (input, ~defaultC="input", ()) =>
     Cn.make([
       defaultC,
-      "is-small",
       Cn.mapSome(
         input,
         fun
@@ -84,12 +83,7 @@ let make = (~dispatch, ~show, ~toggle) => {
     ]);
 
   let buttonClass =
-    Cn.make([
-      "button",
-      "is-link",
-      "is-small",
-      "is-loading"->Cn.ifTrue(form.submitting),
-    ]);
+    Cn.make(["button", "is-link", "is-loading"->Cn.ifTrue(form.submitting)]);
 
   <div className=modalClass>
     <div className="modal-background" onClick=cancel />
@@ -101,8 +95,7 @@ let make = (~dispatch, ~show, ~toggle) => {
           </p>
         </header>
         <section className="modal-card-body">
-          <HorizontalField
-            className="is-small" htmlFor="ingredientName" label="Name:">
+          <HorizontalField htmlFor="ingredientName" label="Name:">
             <input
               className={fieldClass(form.nameResult, ())}
               disabled={form.submitting}
@@ -119,8 +112,7 @@ let make = (~dispatch, ~show, ~toggle) => {
             />
             <FieldError.Maybe result={form.nameResult} />
           </HorizontalField>
-          <HorizontalField
-            className="is-small" htmlFor="ingredientUnit" label="Unit:">
+          <HorizontalField htmlFor="ingredientUnit" label="Unit:">
             <div
               className={fieldClass(form.unit_Result, ~defaultC="select", ())}>
               <select
@@ -141,10 +133,7 @@ let make = (~dispatch, ~show, ~toggle) => {
             </div>
             <FieldError.Maybe result={form.unit_Result} />
           </HorizontalField>
-          <HorizontalField
-            className="is-small"
-            htmlFor="ingredientCalories"
-            label="Calories:">
+          <HorizontalField htmlFor="ingredientCalories" label="Calories:">
             <input
               className={fieldClass(form.caloriesResult, ())}
               disabled={form.submitting}
@@ -167,7 +156,7 @@ let make = (~dispatch, ~show, ~toggle) => {
           <button className=buttonClass disabled={form.submitting}>
             "Save"->React.string
           </button>
-          <button className="button is-small" onClick=cancel>
+          <button className="button" onClick=cancel>
             "Cancel"->React.string
           </button>
         </footer>

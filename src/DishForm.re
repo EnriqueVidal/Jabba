@@ -54,7 +54,6 @@ let make = () => {
   let fieldClass = (input, fClass) =>
     Cn.make([
       fClass,
-      "is-small",
       Cn.mapSome(
         input,
         fun
@@ -64,12 +63,7 @@ let make = () => {
     ]);
 
   let buttonClass =
-    Cn.make([
-      "button",
-      "is-link",
-      "is-small",
-      "is-loading"->Cn.ifTrue(form.submitting),
-    ]);
+    Cn.make(["button", "is-link", "is-loading"->Cn.ifTrue(form.submitting)]);
 
   <section className="section">
     <DishBreadcrumbs />
@@ -118,7 +112,7 @@ let make = () => {
         <div className="field is-grouped">
           <div className="control">
             <button
-              className="button is-success is-small"
+              className="button is-success"
               onClick={
                 evt => {
                   evt->ReactEvent.Mouse.preventDefault;
@@ -146,7 +140,7 @@ let make = () => {
             <button className=buttonClass> "Save"->React.string </button>
           </div>
           <div className="control">
-            <Link className="button is-link is-light is-small" href="/dishes">
+            <Link className="button is-link is-light" href="/dishes">
               "Cancel"->React.string
             </Link>
           </div>

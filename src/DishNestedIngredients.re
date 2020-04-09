@@ -6,7 +6,7 @@ module RemoveButton = {
     } else {
       <div className="control">
         <button
-          className="button is-danger is-small"
+          className="button is-danger"
           disabled={form.submitting}
           onClick={_ => form.removeRecipeIngredient(~at=index)}>
           "Remove"->React.string
@@ -62,7 +62,6 @@ let make = (~form: DishFormality.interface('a), ~ingredients) => {
   let fieldClass = (input, fClass) =>
     Cn.make([
       fClass,
-      "is-small",
       Cn.mapSome(
         input,
         fun

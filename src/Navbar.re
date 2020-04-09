@@ -19,8 +19,15 @@ module Burger = {
 [@react.component]
 let make = () => {
   let (expanded, dispatch) = React.useState(_ => false);
+  let {ReasonReactRouter.path} = ReasonReactRouter.useUrl();
 
-  let onNavigate = () => dispatch(_ => false);
+  React.useEffect1(
+    () => {
+      dispatch(_ => false);
+      None;
+    },
+    [|path|],
+  );
 
   let burgerClass =
     Cn.make(["navbar-burger", "burger", Cn.ifTrue("is-active", expanded)]);
@@ -38,13 +45,11 @@ let make = () => {
     </div>
     <div id="navbar" className=menuClass>
       <div className="navbar-start">
-        <Link className="navbar-item" href="/" onNavigate>
-          "Menu"->React.string
-        </Link>
-        <Link className="navbar-item" href="/dishes" onNavigate>
+        <Link className="navbar-item" href="/"> "Menu"->React.string </Link>
+        <Link className="navbar-item" href="/dishes">
           "Dishes"->React.string
         </Link>
-        <Link className="navbar-item" href="/ingredients" onNavigate>
+        <Link className="navbar-item" href="/ingredients">
           "Ingredients"->React.string
         </Link>
       </div>
