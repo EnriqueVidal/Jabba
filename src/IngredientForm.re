@@ -51,15 +51,9 @@ let make = (~dispatch, ~show, ~toggle) => {
 
         AddIngredient(name, calories, unit_) |> dispatch;
 
-        Js.Global.setTimeout(
-          () => {
-            form.notifyOnSuccess(None);
-            form.reset();
-            toggle();
-          },
-          500,
-        )
-        ->ignore;
+        toggle();
+        form.notifyOnSuccess(None);
+        form.reset();
       },
     );
 

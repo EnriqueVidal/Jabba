@@ -8,11 +8,16 @@ let useModal = (~initialState=false, ()) => {
 let buildRecipe = (ingredients, recipeIngredients) =>
   Belt.(
     recipeIngredients
-    ->Array.map(({amount, ingredient}: DishFormality.recipeIngredient') =>
-        ingredients->Map.String.getExn(ingredient)
-        |> RecipeIngredient.make(amount)
+    ->Array.reduce(
+        (0.0, []),
+        (mem, {amount, ingredient}: DishFormality.recipeIngredient') =>
+        switch (mem, Map.String.get(ingredients, ingredient)) {
+        | (mem, None) => mem
+        | ((cal, rIList), Some(ingredient)) =>
+          let rIngredient = RecipeIngredient.make(amount, ingredient);
+          (cal +. rIngredient.calories, List.add(rIList, rIngredient));
+        }
       )
-    ->List.fromArray
   );
 
 [@react.component]
@@ -30,24 +35,12 @@ let make = () => {
         recipeIngredients: [|{amount: "", ingredient: ""}|],
         type_: "",
       },
-      ~onSubmit=(output, form) => {
+      ~onSubmit=(output, _) => {
         let {name, type_, recipeIngredients}: DishFormality.output = output;
+        let (calories, rIList) = buildRecipe(ingredients, recipeIngredients);
 
-        DishesContext.AddDish(
-          name,
-          buildRecipe(ingredients, recipeIngredients),
-          type_,
-        )
-        ->dDispatch;
-
-        Js.Global.setTimeout(
-          () => {
-            form.notifyOnSuccess(None);
-            ReasonReactRouter.push("/dishes");
-          },
-          500,
-        )
-        ->ignore;
+        DishesContext.AddDish(name, calories, rIList, type_)->dDispatch;
+        ReasonReactRouter.push("/dishes");
       },
     );
 
@@ -65,13 +58,11 @@ let make = () => {
   let buttonClass =
     Cn.make(["button", "is-link", "is-loading"->Cn.ifTrue(form.submitting)]);
 
-  <section className="section">
+  <div className="container is-fluid">
     <DishBreadcrumbs />
-    <div className="container">
-      <h1 className="title"> "Dishes"->React.string </h1>
-      <h2 className="subtitle">
-        "Create dishes that will appear in your menu"->React.string
-      </h2>
+    <h1 className="title"> "Dishes"->React.string </h1>
+    <div className="content">
+      <p> "Create dishes that will appear in your menu"->React.string </p>
       <Form onSubmit={_ => form.submit()}>
         <VerticalField htmlFor="dishName" label="Name">
           <input
@@ -146,7 +137,7 @@ let make = () => {
           </div>
         </div>
       </Form>
+      <IngredientForm dispatch=iDispatch show toggle />
     </div>
-    <IngredientForm dispatch=iDispatch show toggle />
-  </section>;
+  </div>;
 };

@@ -1,5 +1,3 @@
-[%bs.raw {|require('bulma')|}];
-
 let addIngredient = (state, name, calories, unit_) => {
   let ingredient = Ingredient.make(name, calories, unit_);
 
@@ -26,8 +24,8 @@ let ingredients = {
   Belt.Map.String.(empty->set(egg.id, egg)->set(ham.id, ham));
 };
 
-let addDish = (state, name, meal, recipeIngredients) => {
-  let dish = Dish.make(name, meal, recipeIngredients);
+let addDish = (state, name, calories, meal, recipeIngredients) => {
+  let dish = Dish.make(name, calories, meal, recipeIngredients);
 
   state->Belt.Map.String.set(dish.id, dish);
 };
@@ -36,8 +34,8 @@ let dishesReducer = (state, action) =>
   DishesContext.(
     Belt.Map.(
       switch (action) {
-      | AddDish(name, meal, recipeIngredients) =>
-        state->addDish(name, meal, recipeIngredients)
+      | AddDish(name, calories, meal, recipeIngredients) =>
+        state->addDish(name, calories, meal, recipeIngredients)
       | RemoveDish(id) => state->String.remove(id)
       | UpdateDish(dish) => state->String.set(dish.id, dish)
       }
@@ -52,10 +50,6 @@ let make = () => {
   let dishesContext = React.useReducer(dishesReducer, dishes);
 
   <IngredientsProvider value=ingredientsContext>
-    <DishesProvider value=dishesContext>
-      <Navbar />
-      <div className="container is-fluid"> <Router /> </div>
-      <Footer />
-    </DishesProvider>
+    <DishesProvider value=dishesContext> <Router /> </DishesProvider>
   </IngredientsProvider>;
 };

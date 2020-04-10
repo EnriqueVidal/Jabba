@@ -1,7 +1,7 @@
 type state = Belt.Map.String.t(Dish.t);
 
 type action =
-  | AddDish(string, list(RecipeIngredient.t), Meal.t)
+  | AddDish(string, float, list(RecipeIngredient.t), Meal.t)
   | RemoveDish(string)
   | UpdateDish(Dish.t);
 

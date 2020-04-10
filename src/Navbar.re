@@ -34,8 +34,7 @@ let make = () => {
   let menuClass = Cn.make(["navbar-menu", Cn.ifTrue("is-active", expanded)]);
   let onClick = _ => dispatch(_ => !expanded);
 
-  <nav
-    className="navbar is-info" role="navigation" ariaLabel="main navigation">
+  <>
     <div className="navbar-brand">
       <Burger className=burgerClass expanded onClick>
         <span ariaHidden=true />
@@ -54,5 +53,5 @@ let make = () => {
         </Link>
       </div>
     </div>
-  </nav>;
+  </>;
 };
