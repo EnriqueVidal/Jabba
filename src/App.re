@@ -1,6 +1,5 @@
 let addIngredient = (state, name, calories, unit_) => {
   let ingredient = Ingredient.make(name, calories, unit_);
-
   state->Belt.Map.String.set(ingredient.id, ingredient);
 };
 
@@ -17,16 +16,8 @@ let ingredientsReducer = (state, action) =>
     )
   );
 
-let ingredients = {
-  let egg = Ingredient.make("Egg", 347.49, Amount.Piece);
-  let ham = Ingredient.make("Pork Ham", 87.57, Amount.Slice);
-
-  Belt.Map.String.(empty->set(egg.id, egg)->set(ham.id, ham));
-};
-
-let addDish = (state, name, calories, meal, recipeIngredients) => {
-  let dish = Dish.make(name, calories, meal, recipeIngredients);
-
+let addDish = (state, name, calories, recipeIngredients, meal) => {
+  let dish = Dish.make(name, calories, recipeIngredients, meal);
   state->Belt.Map.String.set(dish.id, dish);
 };
 
@@ -34,22 +25,20 @@ let dishesReducer = (state, action) =>
   DishesContext.(
     Belt.Map.(
       switch (action) {
-      | AddDish(name, calories, meal, recipeIngredients) =>
-        state->addDish(name, calories, meal, recipeIngredients)
+      | AddDish(name, calories, recipeIngredients, meal) =>
+        state->addDish(name, calories, recipeIngredients, meal)
       | RemoveDish(id) => state->String.remove(id)
       | UpdateDish(dish) => state->String.set(dish.id, dish)
       }
     )
   );
 
-let dishes = Belt.Map.String.empty;
-
 [@react.component]
 let make = () => {
-  let ingredientsContext = React.useReducer(ingredientsReducer, ingredients);
-  let dishesContext = React.useReducer(dishesReducer, dishes);
+  let ingredients = React.useReducer(ingredientsReducer, Mock.ingredients);
+  let dishes = React.useReducer(dishesReducer, Mock.dishes);
 
-  <IngredientsProvider value=ingredientsContext>
-    <DishesProvider value=dishesContext> <Router /> </DishesProvider>
+  <IngredientsProvider value=ingredients>
+    <DishesProvider value=dishes> <Router /> </DishesProvider>
   </IngredientsProvider>;
 };
