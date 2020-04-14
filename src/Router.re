@@ -6,6 +6,8 @@ let make = () => {
   | ["dishes"] => <Dishes />
   | ["dishes", "create"] => <DishForm />
   | ["ingredients"] => <Ingredients />
+  | ["menu"] => <Menu />
+  | [] => <Menu />
   | _ => <PageNotFound />
   };
 };

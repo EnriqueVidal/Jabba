@@ -1,34 +1,26 @@
-let addIngredient = (state, name, calories, unit_) => {
-  let ingredient = Ingredient.make(name, calories, unit_);
-  state->Belt.Map.String.set(ingredient.id, ingredient);
-};
-
 let ingredientsReducer = (state, action) =>
   IngredientsContext.(
-    Belt.Map.(
+    Belt.(
       switch (action) {
       | AddIngredient(name, calories, unit_) =>
-        state->addIngredient(name, calories, unit_)
-      | RemoveIngredient(id) => state->String.remove(id)
+        let ingredient = Ingredient.make(name, calories, unit_);
+        Map.String.set(state, ingredient.id, ingredient);
+      | RemoveIngredient(id) => Map.String.remove(state, id)
       | UpdateIngredient(ingredient) =>
-        state->String.set(ingredient.id, ingredient)
+        Map.String.set(state, ingredient.id, ingredient)
       }
     )
   );
 
-let addDish = (state, name, calories, recipeIngredients, meal) => {
-  let dish = Dish.make(name, calories, recipeIngredients, meal);
-  state->Belt.Map.String.set(dish.id, dish);
-};
-
 let dishesReducer = (state, action) =>
   DishesContext.(
-    Belt.Map.(
+    Belt.(
       switch (action) {
       | AddDish(name, calories, recipeIngredients, meal) =>
-        state->addDish(name, calories, recipeIngredients, meal)
-      | RemoveDish(id) => state->String.remove(id)
-      | UpdateDish(dish) => state->String.set(dish.id, dish)
+        let dish = Dish.make(name, calories, recipeIngredients, meal);
+        Map.String.set(state, dish.id, dish);
+      | RemoveDish(id) => Map.String.remove(state, id)
+      | UpdateDish(dish) => Map.String.set(state, dish.id, dish)
       }
     )
   );
